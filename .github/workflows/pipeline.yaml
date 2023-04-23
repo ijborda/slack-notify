@@ -10,10 +10,10 @@ env:
   PIPELINE_USER_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
   SAM_TEMPLATE: template.yaml
   # Prod stage
-  STACK_NAME: personal-slack-notify
-  PIPELINE_EXECUTION_ROLE: arn:aws:iam::349629507104:role/aws-sam-cli-managed-scitr-pr-PipelineExecutionRole-TBNPHLKSSYCN
-  CLOUDFORMATION_EXECUTION_ROLE: arn:aws:iam::349629507104:role/aws-sam-cli-managed-scitr-CloudFormationExecutionR-MWCOZR0BZ3O7
-  ARTIFACTS_BUCKET: aws-sam-cli-managed-scitr-prod-pi-artifactsbucket-67ke9e8k7h7h
+  STACK_NAME: slack-notify
+  PIPELINE_EXECUTION_ROLE: arn:aws:iam::349629507104:role/aws-sam-cli-managed-personal-PipelineExecutionRole-Z3QC4VD74OK5
+  CLOUDFORMATION_EXECUTION_ROLE: arn:aws:iam::349629507104:role/aws-sam-cli-managed-perso-CloudFormationExecutionR-1AU9WZ3A1RZ3K
+  ARTIFACTS_BUCKET: ijborda-personal-prod-artifactsbucket
   REGION: ap-southeast-1
   PERSONAL_WEBHOOK_URL: ${{ secrets.PERSONAL_WEBHOOK_URL }}
 
