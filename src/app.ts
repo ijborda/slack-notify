@@ -8,3 +8,12 @@ export const drinkWater = async () => {
     console.error(JSON.stringify(err, Object.getOwnPropertyNames(err)));
   }
 };
+
+export const playDog = async () => {
+  try {
+    const slackMessage = new SlackMessage();
+    await slackMessage.sendReminder('personal', 'Play with doggos! 🐶');
+  } catch (err: unknown) {
+    console.error(JSON.stringify(err, Object.getOwnPropertyNames(err)));
+  }
+};

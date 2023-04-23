@@ -45,3 +45,26 @@ Resources:
         Sourcemap: true
         EntryPoints:
           - src/app.ts
+
+  # Lambda for slack notification - play dog
+  NotificationPlayDog:
+    Type: AWS::Serverless::Function
+    Properties:
+      FunctionName: !Sub '${AWS::StackName}-playDog-lambda'
+      Handler: app.playDog
+      Events:
+        CronSchedule:
+          Type: Schedule
+          Properties:
+            Schedule: 'cron(0 1-9/2 * * ? *)' # Every two hours from 9AM to 5PM UTC+0
+            Name: !Sub '${AWS::StackName}-playDog-schedule'
+            Description: Schedule to play with dog
+            Enabled: true
+    Metadata:
+      BuildMethod: esbuild
+      BuildProperties:
+        Minify: true
+        Target: es2020
+        Sourcemap: true
+        EntryPoints:
+          - src/app.ts

@@ -18,7 +18,7 @@ npm install
 Invoke function
 
 ```
-sam local invoke --env-vars env.json
+sam local invoke --env-vars env.json {lambdaName}
 ```
 
 ## To do

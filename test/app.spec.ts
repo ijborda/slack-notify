@@ -1,4 +1,4 @@
-import { drinkWater } from '../src/app';
+import { drinkWater, playDog } from '../src/app';
 import SlackMessage from '../src/entities/SlackMessage';
 
 import * as chai from 'chai';
@@ -39,6 +39,21 @@ describe('Unit test for the app handler', () => {
       sandbox.stub(SlackMessage.prototype, 'sendReminder').throws(new Error('ErrorMessage'));
 
       await expect(drinkWater()).to.eventually.be.fulfilled;
+      expect(consoleErrorStub.calledOnce).to.be.true;
+    });
+  });
+
+  describe('playDog', () => {
+    it('Should fulfill process if all is good', async () => {
+      sandbox.stub(SlackMessage.prototype, 'sendReminder').resolves();
+
+      await expect(playDog()).to.eventually.be.fulfilled;
+    });
+
+    it('Should fulfill process and catch error if something is wrong', async () => {
+      sandbox.stub(SlackMessage.prototype, 'sendReminder').throws(new Error('ErrorMessage'));
+
+      await expect(playDog()).to.eventually.be.fulfilled;
       expect(consoleErrorStub.calledOnce).to.be.true;
     });
   });
