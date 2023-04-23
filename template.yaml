@@ -33,7 +33,7 @@ Resources:
         CronSchedule:
           Type: Schedule
           Properties:
-            Schedule: 'cron(0 9/1 * ? * *)' # Every hour from 9AM to 12MN
+            Schedule: 'cron(0 9/1 * * ? *)' # Every hour from 9AM to 12MN
             Name: !Sub '${AWS::StackName}-drinkWater-schedule'
             Description: Schedule to drink water
             Enabled: true
