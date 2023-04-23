@@ -15,4 +15,10 @@ Install dependencies
 npm install
 ```
 
+Invoke function
+
+```
+sam local invoke --env-vars env.json
+```
+
 ## To do

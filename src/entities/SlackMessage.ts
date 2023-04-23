@@ -30,7 +30,7 @@ export default class SlackMessage {
         }
       ]
     };
-    await axios.post(url, { data: data });
+    await axios.post(url, data);
   }
 
   private getChannelWebhookUrl(channel: string): string {
