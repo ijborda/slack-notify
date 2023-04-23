@@ -1,0 +1,47 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Transform: AWS::Serverless-2016-10-31
+Description: Service for personal slack notification.
+
+Parameters:
+  PersonalWebhookUrl:
+    Type: String
+    Description: Webhook url for slack reminders. Channel - Personal.
+
+Globals:
+  Function:
+    Timeout: 120
+    MemorySize: 2000
+    Tracing: Active
+    CodeUri: .
+    Runtime: nodejs18.x
+    Architectures:
+      - x86_64
+    Environment:
+      Variables:
+        PERSONAL_WEBHOOK_URL: !Ref PersonalWebhookUrl
+  Api:
+    TracingEnabled: true
+
+Resources:
+  # Lambda for slack notification - drink water
+  UserProfileCreateLambda:
+    Type: AWS::Serverless::Function
+    Properties:
+      FunctionName: !Sub '${AWS::StackName}-drinkWater-lambda'
+      Handler: app.drinkWater
+      Events:
+        CronSchedule:
+          Type: Schedule
+          Properties:
+            Schedule: 'cron(0 9-23/1 * * * *)' # Every hour from 9AM to 12MN
+            Name: !Sub '${AWS::StackName}-drinkWater-schedule'
+            Description: Schedule to drink water
+            Enabled: true
+    Metadata:
+      BuildMethod: esbuild
+      BuildProperties:
+        Minify: true
+        Target: es2020
+        Sourcemap: true
+        EntryPoints:
+          - src/app.ts

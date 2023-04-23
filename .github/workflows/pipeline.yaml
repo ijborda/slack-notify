@@ -1,0 +1,73 @@
+name: Pipeline
+
+on:
+  push:
+    branches:
+      - '*'
+
+env:
+  PIPELINE_USER_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+  PIPELINE_USER_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+  SAM_TEMPLATE: template.yaml
+  # Prod stage
+  STACK_NAME: personal-slack-notify
+  PIPELINE_EXECUTION_ROLE: arn:aws:iam::349629507104:role/aws-sam-cli-managed-scitr-pr-PipelineExecutionRole-TBNPHLKSSYCN
+  CLOUDFORMATION_EXECUTION_ROLE: arn:aws:iam::349629507104:role/aws-sam-cli-managed-scitr-CloudFormationExecutionR-MWCOZR0BZ3O7
+  ARTIFACTS_BUCKET: aws-sam-cli-managed-scitr-prod-pi-artifactsbucket-67ke9e8k7h7h
+  REGION: ap-southeast-1
+  PERSONAL_WEBHOOK_URL: ${{ secrets.PERSONAL_WEBHOOK_URL }}
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions/setup-node@v3
+        with:
+          node-version: '18'
+      - run: npm install
+      - run: npm run test
+
+  build-and-deploy-prod:
+    if: github.ref == 'refs/heads/main'
+    needs: [test]
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions/setup-python@v4
+        with:
+          python-version: '3.10'
+      - uses: aws-actions/setup-sam@v2
+
+      - name: Build resources
+        run: sam build --template ${SAM_TEMPLATE} --use-container
+
+      - name: Assume the prod pipeline user role
+        uses: aws-actions/configure-aws-credentials@v1-node16
+        with:
+          aws-access-key-id: ${{ env.PIPELINE_USER_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ env.PIPELINE_USER_SECRET_ACCESS_KEY }}
+          aws-region: ${{ env.REGION }}
+          role-to-assume: ${{ env.PIPELINE_EXECUTION_ROLE }}
+          role-session-name: build-and-deploy-prod
+          role-duration-seconds: 3600
+          role-skip-session-tagging: true
+
+      - name: Upload artifacts to prod artifact buckets
+        run: |
+          sam package \
+            --s3-bucket ${ARTIFACTS_BUCKET} \
+            --region ${REGION} \
+            --output-template-file packaged-prod.yaml
+
+      - name: Deploy to prod stack
+        run: |
+          sam deploy --stack-name ${STACK_NAME} \
+            --template packaged-prod.yaml \
+            --capabilities CAPABILITY_IAM \
+            --region ${REGION} \
+            --s3-bucket ${ARTIFACTS_BUCKET} \
+            --no-fail-on-empty-changeset \
+            --role-arn ${CLOUDFORMATION_EXECUTION_ROLE} \
+            --parameter-overrides \
+              PersonalWebhookUrl=${PERSONAL_WEBHOOK_URL} \

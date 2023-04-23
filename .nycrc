@@ -1,0 +1,14 @@
+{
+  "all": true,
+  "check-coverage": true,
+  "lines": 50,
+  "statements": 50,
+  "functions": 50,
+  "branches": 50,
+  "extension": [".ts"],
+  "require": ["ts-node/register"],
+  "include": ["src/**/*"],
+  "exclude": ["src/**/*.d.ts"],
+  "output": "reports",
+  "reporter": ["text", "lcov", "text-summary"]
+}
